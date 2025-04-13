@@ -1,5 +1,9 @@
 export const MODEL = 'gpt-4o'
 
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ''
+export const DATABASE_URL = process.env.DATABASE_URL || ''
+export const APP_ENV = process.env.APP_ENV || 'development'
+
 // System prompt for the educational assistant
 export const SYSTEM_PROMPT = `
 You are an AI educational revision tutor designed to help students in grades 6-10 with their studies.
