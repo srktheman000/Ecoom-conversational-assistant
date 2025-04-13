@@ -2,9 +2,17 @@ import OpenAI from 'openai'
 import { ChatCompletionTool } from 'openai/resources/chat/completions'
 import { tools } from '@/lib/tools/tools'
 import { MODEL } from '@/config/constants'
+import { validateSession } from '@/lib/auth'
+
 const openai = new OpenAI()
 
 export async function POST(request: Request) {
+  try {
+    await validateSession(request)
+  } catch (error) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
   const { messages } = await request.json()
 
   console.log('Received messages:', messages)

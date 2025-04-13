@@ -1,8 +1,11 @@
 import { concepts, topics } from '@/config/data/demo-data'
 import { NextResponse } from 'next/server'
+import { validateSession } from '@/lib/auth'
 
 export async function GET(request: Request) {
   try {
+    await validateSession(request)
+
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('query')
 

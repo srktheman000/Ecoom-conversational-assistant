@@ -1,32 +1,34 @@
+// app/api/subjects/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import { connectToDatabase } from '../../../lib/mongodb'
 
-const mockSubjects = [
-  {
-    id: 'math',
-    title: 'Mathematics',
-    description: 'Learn about numbers and equations.',
-    chapterCount: 12
-  },
-  {
-    id: 'science',
-    title: 'Science',
-    description: 'Explore the world of physics, chemistry, and biology.',
-    chapterCount: 15
-  },
-  {
-    id: 'history',
-    title: 'History',
-    description: 'Dive into the past and learn about historical events.',
-    chapterCount: 10
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams
+    const grade = searchParams.get('grade')
+
+    if (!grade) {
+      return NextResponse.json(
+        { message: 'Grade parameter is required' },
+        { status: 400 }
+      )
+    }
+
+    // Connect to MongoDB
+    const { db } = await connectToDatabase()
+
+    // Find subjects for the specified grade
+    const subjects = await db
+      .collection('subjects')
+      .find({ grade: parseInt(grade) })
+      .toArray()
+
+    return NextResponse.json({ subjects })
+  } catch (error) {
+    console.error('Error fetching subjects:', error)
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    )
   }
-]
-
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const grade = searchParams.get('grade')
-
-  // Mock filtering logic based on grade (replace with real logic)
-  const filteredSubjects = mockSubjects.filter(subject => subject)
-
-  return NextResponse.json({ subjects: filteredSubjects })
 }
