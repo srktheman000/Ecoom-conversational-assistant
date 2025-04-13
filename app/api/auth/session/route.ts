@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ user })
   } catch (error) {
-    console.log('Session check error:', error)
+    console.error('Session check error:', error)
     return NextResponse.json(
       { message: 'Invalid or expired token' },
       { status: 401 }

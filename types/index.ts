@@ -1,9 +1,8 @@
 // types/index.ts
 export interface User {
   id: string
+  name: string
   email: string
-  grade: number
-  name?: string
 }
 
 export interface LoginCredentials {
@@ -13,7 +12,7 @@ export interface LoginCredentials {
 }
 
 export interface SignupCredentials {
+  name: string
   email: string
   password: string
-  grade: number
 }

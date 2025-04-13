@@ -7,11 +7,11 @@ import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, grade } = await request.json()
+    const { name, email, password } = await request.json()
 
-    if (!email || !password || !grade) {
+    if (!name || !email || !password) {
       return NextResponse.json(
-        { message: 'Email, password, and grade are required' },
+        { message: 'Name, email, password, and grade are required' },
         { status: 400 }
       )
     }
@@ -34,9 +34,9 @@ export async function POST(request: NextRequest) {
 
     // Create new user
     const result = await db.collection('users').insertOne({
+      name,
       email,
       password: hashedPassword,
-      grade: parseInt(grade),
       createdAt: new Date()
     })
 
@@ -49,7 +49,8 @@ export async function POST(request: NextRequest) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
     const token = await new SignJWT({
       id: user._id.toString(),
-      email: user.email
+      email: user.email,
+      name: user.name
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
       user
     })
   } catch (error) {
-    console.log('Signup error:', error)
+    console.error('Signup error:', error)
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

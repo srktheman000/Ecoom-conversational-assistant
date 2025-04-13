@@ -15,7 +15,7 @@ interface AuthContextType {
   user: User | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string, grade: number) => Promise<void>
+  signup: (name: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   checkSession: () => Promise<void>
 }
@@ -37,19 +37,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true)
       const response = await fetch('/api/auth/session')
 
-      console.log('Session check response:', response)
-
       if (response.ok) {
         const data = await response.json()
         setUser(data.user)
       } else {
         setUser(null)
-        router.push('/login')
       }
     } catch (error) {
-      console.log('Session check failed:', error)
+      console.error('Session check failed:', error)
       setUser(null)
-      router.push('/login')
     } finally {
       setLoading(false)
     }
@@ -80,13 +76,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const signup = async (email: string, password: string, grade: number) => {
+  const signup = async (name: string, email: string, password: string) => {
     setLoading(true)
     try {
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, grade })
+        body: JSON.stringify({ name, email, password })
       })
 
       if (!response.ok) {

@@ -40,20 +40,26 @@ export default function Dashboard() {
       <header className="bg-gray-800 shadow">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold">RevisionLLM</h1>
-          <button
-            onClick={() => logout()}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-          >
-            Logout
-          </button>
+          <div className="flex items-center space-x-4">
+            <span className="text-gray-300">
+              Hello, {user?.name || 'Student'}
+            </span>
+            <button
+              onClick={() => logout()}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <h2 className="text-2xl font-semibold mb-6">
-            Welcome, {user?.email}
+            Welcome, {user?.name || 'Student'}
           </h2>
+          <p className="mb-6 text-gray-300">Grade {user?.grade} Subjects</p>
 
           {loading ? (
             <div className="flex justify-center">
