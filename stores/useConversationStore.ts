@@ -20,7 +20,8 @@ const useConversationStore = create<ConversationState>((set, get) => ({
     {
       type: 'message',
       role: 'assistant',
-      content: INITIAL_MESSAGE
+      content:
+        "Hi there! I'm your educational revision tutor for grades 6-10. I can help you understand concepts in history, geography, science, English, and more. What subject would you like to study today?"
     }
   ],
   conversationItems: [],

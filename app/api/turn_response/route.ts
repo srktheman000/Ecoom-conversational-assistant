@@ -22,6 +22,8 @@ export async function POST(request: Request) {
             parallel_tool_calls: false
           })
 
+          console.log('OpenAI stream started', 'openaiStream')
+
           let functionArguments = ''
           let callId = ''
           let functionName = ''

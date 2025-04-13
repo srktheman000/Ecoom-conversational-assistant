@@ -18,12 +18,14 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage }) => {
     itemsEndRef.current?.scrollIntoView({ behavior: 'instant' })
   }
 
+  console.log('items', items)
+
   useEffect(() => {
     scrollToBottom()
   }, [items])
 
   return (
-    <div className="flex justify-center items-center size-full">
+    <div className="flex justify-center items-center size-full bg-red-100">
       <div className="flex grow flex-col h-full max-w-[750px] gap-2">
         <div className="h-[90vh] overflow-y-scroll px-10">
           <div className="space-y-1 pt-4 ">

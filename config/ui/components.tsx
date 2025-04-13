@@ -1,244 +1,405 @@
-// Define components that will be used by the generate_ui tool
-// Updates the componentsMap object to map React components to the components defined in config/components-definition.ts
+'use client'
+import React, { useState } from 'react'
+import { submitQuizAnswer } from '../user-actions'
 
-import React from 'react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table'
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
-import { ChartConfig, ChartContainer } from '@/components/ui/chart'
-import { getComponent } from '@/lib/components-mapping'
-import { addToCart, selectOrder } from '@/config/user-actions'
-import { Button } from '@/components/ui/button'
-
-const formatKey = (key: string) =>
-  key.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')
-
-const getChartConfig = (columns: { label: string; value: number }[]) => {
-  const config: ChartConfig = {}
-
-  columns.forEach((item: { label: string; value: number }) => {
-    config[formatKey(item.label)] = {
-      label: item.label,
-      color: '#ffffff'
-    }
-  })
-
-  return config
+// Define interfaces for each component's props
+interface SummaryCardProps {
+  name: string
+  title: string
+  content: string
+  subject: string
+  chapter: string
+  keypoints?: string[]
 }
 
-const getChartData = (columns: { label?: string; value?: string }[]) => {
-  return columns
-    .filter(item => !!item.label)
-    .map((item: { label?: string; value?: string }, index: number) => {
-      if (!item.label) {
-        throw new Error('Label is required')
-      }
-      return {
-        id: index,
-        label: item.label,
-        value: item.value !== undefined ? parseFloat(item.value) : 0,
-        fill: '#000000'
-      }
-    })
+interface TimelineProps {
+  name: string
+  title: string
+  events: Array<{
+    date: string
+    title: string
+    description: string
+    importance?: 'low' | 'medium' | 'high'
+  }>
 }
 
-export const HeaderComponent = ({ content }: { content?: string }) => {
-  return (
-    <div>
-      <h1 className="text-sm text-stone-900 font-medium">{content}</h1>
-    </div>
-  )
+interface QuizProps {
+  name: string
+  title: string
+  difficulty: string
+  questions: Array<{
+    id: string
+    question: string
+    type: 'multiple_choice' | 'true_false' | 'short_answer'
+    options?: string[]
+  }>
 }
 
-export const BarChartComponent = ({
-  columns
-}: {
-  columns?: { label?: string; value?: string }[]
+interface ConceptMapProps {
+  name: string
+  title: string
+  centralConcept: string
+  connections: Array<{
+    from: string
+    to: string
+    relationship: string
+  }>
+}
+
+interface FlashcardProps {
+  name: string
+  front: string
+  back: string
+  subject: string
+  topic: string
+}
+
+interface HeaderProps {
+  name: string
+  content: string
+}
+
+interface TableProps {
+  name: string
+  columns: Array<{
+    key: string
+    title: string
+  }>
+  rows: Array<Record<string, any>>
+}
+
+interface CardProps {
+  name: string
+  children: Array<any>
+}
+
+// Component implementations
+export const SummaryCard: React.FC<SummaryCardProps> = ({
+  title,
+  content,
+  subject,
+  chapter,
+  keypoints
 }) => {
-  if (!columns) return null
-  const chartData = getChartData(columns)
-  const chartConfig = getChartConfig(chartData)
   return (
-    <ChartContainer config={chartConfig} className="">
-      <BarChart accessibilityLayer data={chartData}>
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="label"
-          tickLine={false}
-          tickMargin={10}
-          axisLine={false}
-          padding={{ left: 10, right: 10 }}
-        />
-        <YAxis orientation="left" width={24} />
-        <Bar dataKey="value" fill="#1A535C" radius={6} barSize={30} />
-      </BarChart>
-    </ChartContainer>
+    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto my-4">
+      <h2 className="text-2xl font-bold mb-2">{title}</h2>
+      <div className="text-sm text-gray-500 mb-4">
+        {subject} - {chapter}
+      </div>
+      <div className="prose mb-6">{content}</div>
+      {keypoints && keypoints.length > 0 && (
+        <div className="mt-4">
+          <h3 className="font-bold mb-2">Key Points:</h3>
+          <ul className="list-disc pl-5">
+            {keypoints.map((point, i) => (
+              <li key={i} className="mb-1">
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   )
 }
 
-export const TableComponent = ({
-  columns,
-  rows
-}: {
-  columns?: { key?: string; title?: string }[]
-  rows?: any[]
-}) => (
-  <Table>
-    <TableHeader>
-      <TableRow>
-        {columns?.map((column, index) => (
-          <TableHead key={index}>{column.title}</TableHead>
+export const Timeline: React.FC<TimelineProps> = ({ title, events }) => {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto my-4">
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
+      <div className="relative border-l-2 border-blue-500 ml-4">
+        {events?.map((event, index) => (
+          <div key={index} className="mb-8 ml-6">
+            <div className="absolute w-4 h-4 bg-blue-500 rounded-full -left-[9px] mt-1.5"></div>
+            <div className="font-bold text-blue-700">{event?.date}</div>
+            <h3 className="font-semibold text-lg">{event?.title}</h3>
+            <p className="text-gray-700">{event?.description}</p>
+            {event.importance && (
+              <span
+                className={`inline-block px-2 py-1 text-xs rounded-full mt-2 ${
+                  event?.importance === 'high'
+                    ? 'bg-red-100 text-red-800'
+                    : event?.importance === 'medium'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-green-100 text-green-800'
+                }`}
+              >
+                {event?.importance.charAt(0).toUpperCase() +
+                  event?.importance.slice(1)}{' '}
+                Importance
+              </span>
+            )}
+          </div>
         ))}
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {rows?.map((row, index) => (
-        <TableRow key={index}>
-          {row.values?.map((value: string, index: number) => (
-            <TableCell key={index}>{value}</TableCell>
-          ))}
-        </TableRow>
+      </div>
+    </div>
+  )
+}
+
+export const Quiz: React.FC<QuizProps> = ({ title, difficulty, questions }) => {
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [submitted, setSubmitted] = useState<Record<string, boolean>>({})
+
+  console.log('Quiz answers:', answers)
+  console.log('Quiz submitted:', submitted)
+
+  const handleAnswerChange = (questionId: string, answer: string) => {
+    setAnswers({
+      ...answers,
+      [questionId]: answer
+    })
+  }
+
+  const handleSubmit = (questionId: string) => {
+    setSubmitted({
+      ...submitted,
+      [questionId]: true
+    })
+    submitQuizAnswer(questionId, answers[questionId])
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto my-4">
+      <h2 className="text-2xl font-bold mb-2">{title}</h2>
+      <div className="text-sm text-gray-500 mb-6">
+        Difficulty: {difficulty?.charAt(0).toUpperCase() + difficulty?.slice(1)}
+      </div>
+
+      {questions?.map((q, index) => (
+        <div key={q.id} className="mb-6 p-4 border border-gray-200 rounded-lg">
+          <h3 className="font-semibold mb-2">
+            Question {index + 1}: {q.question}
+          </h3>
+
+          {q.type === 'multiple_choice' && q.options && (
+            <div className="ml-4 mt-3">
+              {q.options.map((option, i) => (
+                <div key={i} className="mb-2">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name={q.id}
+                      value={option}
+                      onChange={() => handleAnswerChange(q.id, option)}
+                      disabled={submitted[q.id]}
+                      className="mr-2"
+                    />
+                    {option}
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {q.type === 'true_false' && (
+            <div className="ml-4 mt-3">
+              <label className="flex items-center mb-2">
+                <input
+                  type="radio"
+                  name={q.id}
+                  value="true"
+                  onChange={() => handleAnswerChange(q.id, 'true')}
+                  disabled={submitted[q.id]}
+                  className="mr-2"
+                />
+                True
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name={q.id}
+                  value="false"
+                  onChange={() => handleAnswerChange(q.id, 'false')}
+                  disabled={submitted[q.id]}
+                  className="mr-2"
+                />
+                False
+              </label>
+            </div>
+          )}
+
+          {q.type === 'short_answer' && (
+            <div className="ml-4 mt-3">
+              <input
+                type="text"
+                placeholder="Your answer"
+                onChange={e => handleAnswerChange(q.id, e.target.value)}
+                disabled={submitted[q.id]}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+          )}
+
+          <button
+            onClick={() => handleSubmit(q.id)}
+            disabled={!answers[q.id] || submitted[q.id]}
+            className={`mt-4 px-4 py-2 rounded ${
+              submitted[q.id]
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-blue-500 text-white hover:bg-blue-600'
+            }`}
+          >
+            {submitted[q.id] ? 'Submitted' : 'Submit Answer'}
+          </button>
+
+          {submitted[q.id] && (
+            <div className="mt-3 p-3 bg-blue-50 rounded-md">
+              <p className="font-medium">
+                Answer submitted! The tutor will provide feedback shortly.
+              </p>
+            </div>
+          )}
+        </div>
       ))}
-    </TableBody>
-  </Table>
-)
-
-export const ItemComponent = ({
-  id,
-  item_name,
-  primary_image,
-  description,
-  price
-}: any) => (
-  <div className="flex flex-col mb-3 gap-2 justify-between border border-gray-200 bg-gray-50 p-4 rounded-lg flex-shrink-0 w-52 h-96 overflow-x-auto">
-    <div className="flex flex-col">
-      <div className="aspect-h-1 aspect-w-1 rounded-lg overflow-hidden text-center h-48">
-        {primary_image && primary_image.match(/\.(jpeg|jpg|gif|png|webp)$/) ? (
-          <img
-            src={`/imgs/${primary_image}`}
-            alt={item_name || 'Product Image'}
-            className="w-full h-auto object-cover object-center rounded-lg"
-          />
-        ) : (
-          <div className="animate-pulse bg-gray-200 h-full w-full rounded-lg"></div>
-        )}
-      </div>
-      <div className="flex flex-col gap-1 justify-start">
-        <h3 className="text-sm font-semibold text-gray-700 line-clamp-2">
-          {item_name ?? ''}
-        </h3>
-        <p className="text-xs text-gray-500 line-clamp-3">
-          {description ?? ''}
-        </p>
-      </div>
     </div>
-    <div className="flex justify-start">
-      {typeof price === 'number' && !isNaN(price) ? (
-        <span className="font-medium text-gray-900">${price.toFixed(2)}</span>
-      ) : null}
-    </div>
-    <Button size="sm" onClick={() => addToCart(id)}>
-      Add to cart
-    </Button>
-  </div>
-)
+  )
+}
 
-export const OrderComponent = ({ id, total, date, status, products }: any) => (
-  <div className="flex flex-col gap-2 mb-3">
-    <div className="flex flex-col justify-between rounded-lg border bg-white p-4 w-96 h-72 flex-shrink-0">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between text-gray-800">
-          <div className="flex items-center gap-2">
-            Order <span className="font-semibold"> #{id ?? ''} </span>
-          </div>
-          <div className="text-xs border border-gray-500 rounded-md px-1.5 py-0.5 text-gray-500">
-            {status ?? ''}
-          </div>
+export const ConceptMap: React.FC<ConceptMapProps> = ({
+  title,
+  centralConcept,
+  connections
+}) => {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto my-4">
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
+      <div className="p-4 border-2 border-dashed border-blue-500 rounded-lg">
+        <div className="text-center font-bold p-3 bg-blue-100 rounded-full mb-6">
+          {centralConcept}
         </div>
-        <div className="flex items-center gap-2">
-          <div className="text-xs text-gray-500">{date ?? ''}</div>
-        </div>
-        <div className="flex flex-col gap-2 mt-2">
-          {products?.map((product: any, index: number) => (
-            <div className="flex items-center gap-2" key={index}>
-              <div className="aspect-h-1 aspect-w-1 w-16 h-16 overflow-hidden rounded-lg bg-gray-100 border border-gray-200 xl:aspect-h-8 xl:aspect-w-7">
-                {product.item?.primary_image &&
-                product.item.primary_image.match(
-                  /\.(jpeg|jpg|gif|png|webp)$/
-                ) ? (
-                  <img
-                    src={`/imgs/${product.item.primary_image}`}
-                    alt={product.item.item_name}
-                    className="h-full w-full object-cover object-center"
-                  />
-                ) : (
-                  <div className="animate-pulse bg-gray-200 h-full w-full"></div>
-                )}
+        <div className="space-y-4">
+          {connections?.map((connection, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <div className="p-2 bg-green-100 rounded w-1/3 text-center">
+                {connection?.from}
               </div>
-
-              <div className="text-xs text-gray-600 flex-1 text-ellipsis text-nowrap overflow-hidden">
-                <span className="text-ellipsis">
-                  {product.item?.item_name ?? ''}
-                </span>
-                <span className="font-semibold ml-1">
-                  x {product.quantity ?? ''}
-                </span>
+              <div className="flex-1 text-center text-sm italic px-2">
+                {connection?.relationship}
               </div>
-              <div className="text-xs font-semibold text-gray-800">
-                $ {product.item?.price ?? ''}
+              <div className="p-2 bg-yellow-100 rounded w-1/3 text-center">
+                {connection?.to}
               </div>
             </div>
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-between">
-        <div className="text-gray-500 font-semibold">Total</div>
-        <div className="font-medium text-gray-900 ">$ {total}</div>
+    </div>
+  )
+}
+
+export const Flashcard: React.FC<FlashcardProps> = ({
+  front,
+  back,
+  subject,
+  topic
+}) => {
+  const [flipped, setFlipped] = useState(false)
+
+  const handleFlip = () => {
+    setFlipped(!flipped)
+  }
+
+  console.log('flipped', front, back, subject, topic)
+  return (
+    <div
+      className="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto my-4 cursor-pointer min-h-[200px] relative"
+      onClick={handleFlip}
+    >
+      <div className="absolute top-2 right-2 text-xs text-gray-500">
+        {subject} - {topic}
+      </div>
+
+      <div className="flex items-center justify-center h-full">
+        {flipped ? (
+          <div className="font-medium text-lg">{back}</div>
+        ) : (
+          <div className="font-bold text-xl">{front}</div>
+        )}
+      </div>
+
+      <div className="absolute bottom-2 left-0 right-0 text-center text-sm text-gray-500">
+        Click to {flipped ? 'hide' : 'show'} answer
       </div>
     </div>
-    <div className="flex justify-start">
-      <Button size="sm" onClick={() => selectOrder(id)}>
-        Select order
-      </Button>
+  )
+}
+
+export const Header: React.FC<HeaderProps> = ({ content }) => {
+  return <h2 className="text-2xl font-bold mb-4">{content}</h2>
+}
+
+export const Table: React.FC<TableProps> = ({ columns, rows }) => {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto my-4 overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr>
+            {columns?.map(column => (
+              <th
+                key={column?.key}
+                className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                {column?.title}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {rows?.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {columns?.map(column => (
+                <td key={column?.key} className="px-6 py-4 whitespace-nowrap">
+                  {/* Use the column key to access the correct property from each row */}
+                  {row[column?.key]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
-  </div>
-)
+  )
+}
 
-export const CardComponent = ({ children }: { children?: any[] }) => (
-  <div className="flex flex-col w-full bg-white rounded-lg p-4 shadow-md mt-2">
-    {children ? (
-      <div className="flex flex-col gap-4">
-        {children.map((child: any, index: number) => (
-          <React.Fragment key={index}>{getComponent(child)}</React.Fragment>
-        ))}
-      </div>
-    ) : null}
-  </div>
-)
+export const Card: React.FC<CardProps> = ({ children }) => {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto my-4">
+      {children &&
+        Array.isArray(children) &&
+        children.map((child, index) => {
+          // Explicitly check for name and get the appropriate component
+          if (!child || !child.name) return null
 
-export const CarouselComponent = ({ children }: { children?: any[] }) => (
-  <div className="flex space-x-2 overflow-x-scroll w-full">
-    {children
-      ? children.map((child: any, index: number) => (
-          <React.Fragment key={index}>{getComponent(child)}</React.Fragment>
-        ))
-      : null}
-  </div>
-)
+          const ComponentMap: Record<string, React.ComponentType<any>> = {
+            header: Header,
+            summary_card: SummaryCard,
+            timeline: Timeline,
+            quiz: Quiz,
+            concept_map: ConceptMap,
+            flashcard: Flashcard,
+            table: Table
+          }
 
-export const componentsMap = {
-  card: CardComponent,
-  carousel: CarouselComponent,
-  bar_chart: BarChartComponent,
-  header: HeaderComponent,
-  table: TableComponent,
-  item: ItemComponent,
-  order: OrderComponent
-  // update componentsMap to match components passed to generate_ui
+          const ChildComponent = ComponentMap[child.name]
+          return ChildComponent ? (
+            <div key={index}>
+              <ChildComponent {...child} />
+            </div>
+          ) : null
+        })}
+    </div>
+  )
+}
+
+// Export all components in a map that can be referenced by name
+export const componentsMap: Record<string, React.ComponentType<any>> = {
+  card: Card,
+  header: Header,
+  summary_card: SummaryCard,
+  timeline: Timeline,
+  quiz: Quiz,
+  concept_map: ConceptMap,
+  flashcard: Flashcard,
+  table: Table
 }

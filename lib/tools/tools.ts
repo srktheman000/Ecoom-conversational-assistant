@@ -3,20 +3,20 @@ import { generateUITool } from './generate-ui-tool'
 import { toolsList } from '../../config/tools-list'
 
 const toolsDefinitions = [
-  generateUITool,
-  ...toolsList.map(tool => {
-    return {
-      name: tool.name,
-      description: tool.description,
-      parameters: {
-        type: 'object',
-        properties: { ...tool.parameters },
-        required: Object.keys(tool.parameters),
-        additionalProperties: false
-      },
-      strict: true
-    }
-  })
+  generateUITool
+  // ...toolsList.map(tool => {
+  //   return {
+  //     name: tool.name,
+  //     description: tool.description,
+  //     parameters: {
+  //       type: 'object',
+  //       properties: { ...tool.parameters },
+  //       required: Object.keys(tool.parameters),
+  //       additionalProperties: false
+  //     },
+  //     strict: true
+  //   }
+  // })
 ]
 
 interface Parameter {
@@ -26,17 +26,7 @@ interface Parameter {
   additionalProperties?: boolean
 }
 
-interface Tool {
-  type: 'function'
-  function: {
-    name: string
-    description: string
-    parameters?: Parameter
-    strict?: boolean
-  }
-}
-
-export const tools: Tool[] = toolsDefinitions.map(tool => {
+const tools: any[] = toolsDefinitions.map(tool => {
   return {
     type: 'function',
     function: {
@@ -45,3 +35,5 @@ export const tools: Tool[] = toolsDefinitions.map(tool => {
     }
   }
 })
+
+export { tools }

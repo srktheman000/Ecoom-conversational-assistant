@@ -1,97 +1,120 @@
-// List of tools available to the assistant
+// List of tools available to the educational assistant
 // No need to include the top-level wrapper object as it is added in lib/tools/tools.ts
-// More information on function calling: https://platform.openai.com/docs/guides/function-calling
 
 export const toolsList = [
   {
-    name: 'get_products',
-    description: 'Fetch the list of available products',
+    name: 'get_subjects',
+    description: 'Fetch the list of available subjects for study',
     parameters: {}
   },
   {
-    name: 'get_product_details',
-    description: 'Fetch the details of a product',
+    name: 'get_chapters',
+    description: 'Fetch the list of chapters for a specific subject',
     parameters: {
-      productId: {
+      subjectId: {
         type: 'string',
-        description: 'ID of the product to fetch details for'
+        description: 'ID of the subject to fetch chapters for'
       }
     }
   },
   {
-    name: 'get_orders',
-    description: 'Fetch the list of orders',
-    parameters: {}
-  },
-  {
-    name: 'file_claim',
-    description: 'File a claim on behalf of a customer',
+    name: 'get_topic_details',
+    description: 'Fetch detailed information about a specific topic',
     parameters: {
-      orderId: {
+      topicId: {
         type: 'string',
-        description: 'ID of the order to file a claim for'
-      },
-      reason: {
-        type: 'string',
-        description: 'Reason for the claim'
-      },
-      description: {
-        type: 'string',
-        description: 'Description of the claim'
+        description: 'ID of the topic to fetch details for'
       }
     }
   },
   {
-    name: 'create_return',
-    description: 'Create a return for a specific order.',
+    name: 'get_timeline',
+    description: 'Generate a historical timeline for a specific topic',
     parameters: {
-      orderId: {
+      topicId: {
         type: 'string',
-        description: 'ID of the order to return'
+        description: 'ID of the topic to generate timeline for'
       },
-      return_items: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            productId: {
-              type: 'string',
-              description: 'ID of the product to return'
-            },
-            quantity: {
-              type: 'integer',
-              description: 'Quantity of the product to return'
-            }
-          },
-          required: ['productId', 'quantity'],
-          additionalProperties: false
-        }
+      timeframeStart: {
+        type: 'string',
+        description: 'Starting year/period for the timeline (optional)'
+      },
+      timeframeEnd: {
+        type: 'string',
+        description: 'Ending year/period for the timeline (optional)'
       }
     }
   },
   {
-    name: 'add_to_cart',
-    description:
-      'Add items to cart when the user has confirmed their interest.',
+    name: 'generate_quiz',
+    description: 'Generate a quiz for a specific topic or chapter',
     parameters: {
-      items: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            productId: {
-              type: 'string',
-              description: 'ID of the product to add to the cart'
-            },
-            quantity: {
-              type: 'integer',
-              description: 'Quantity of the product to add to the cart'
-            }
-          },
-          required: ['productId', 'quantity'],
-          additionalProperties: false
-        }
+      topicId: {
+        type: 'string',
+        description: 'ID of the topic to generate quiz for'
+      },
+      difficulty: {
+        type: 'string',
+        enum: ['easy', 'medium', 'hard'],
+        description: 'Difficulty level of the quiz'
+      },
+      questionCount: {
+        type: 'integer',
+        description: 'Number of questions to generate'
+      }
+    }
+  },
+  {
+    name: 'check_answer',
+    description: 'Check if a student answer is correct',
+    parameters: {
+      questionId: {
+        type: 'string',
+        description: 'ID of the question being answered'
+      },
+      studentAnswer: {
+        type: 'string',
+        description: 'Answer provided by the student'
+      }
+    }
+  },
+  {
+    name: 'search_concepts',
+    description: 'Search for specific concepts across subjects',
+    parameters: {
+      query: {
+        type: 'string',
+        description: 'Search query for finding concepts'
       }
     }
   }
+  // {
+  //   name: 'semantic_search',
+  //   description:
+  //     'Search through educational documents using semantic search to find relevant information',
+  //   parameters: {
+  //     searchPhrase: {
+  //       type: 'string',
+  //       description: 'The search phrase to find information in documents'
+  //     },
+  //     exactPhrase: {
+  //       type: 'string',
+  //       description: 'The exact phrase to match in documents (optional)'
+  //     },
+  //     primaryKeywords: {
+  //       type: 'array',
+  //       items: {
+  //         type: 'string'
+  //       },
+  //       description: 'Primary keywords to improve search relevance'
+  //     },
+  //     secondaryKeywords: {
+  //       type: 'array',
+  //       items: {
+  //         type: 'string'
+  //       },
+  //       description: 'Secondary keywords to improve search relevance'
+  //     }
+  //   }
+  // }
 ]

@@ -1,145 +1,275 @@
 // Placeholder demo data - used in the API routes
 
-import { Order, Product, ProductDetails } from './types'
+import {
+  Subject,
+  Chapter,
+  Topic,
+  Timeline,
+  TimelineEvent,
+  Question,
+  Quiz,
+  Concept
+} from './types'
 
-export const products: Product[] = [
+export const subjects: Subject[] = [
   {
-    id: 'qt-24X553',
-    name: 'AI-Titan Quantum Processor',
-    price: 1590.0,
+    id: 'hist-101',
+    name: 'History',
     description:
-      "The AI-Titan Quantum Processor is engineered for next-generation artificial intelligence tasks. Featuring 256 quantum cores and neural acceleration, it's the ideal choice for cutting-edge AI models.",
-    image: 'qt-24X553.webp',
-    weight: 0.6,
-    dimensions: '12cm x 10cm x 2cm'
+      'Explore the past and understand how it shapes our present and future.',
+    gradeLevel: ['6', '7', '8', '9', '10'],
+    image: 'history.webp'
   },
   {
-    id: 'mb-NE9000',
-    name: 'Neuronix-9000 AI Motherboard',
-    price: 1199.99,
+    id: 'sci-101',
+    name: 'Science',
     description:
-      'A state-of-the-art AI-focused motherboard featuring integrated neural networking, 12 PCIe 5.0 slots, and optimized heat dissipation for long training cycles.',
-    image: 'mb-NE9000.webp',
-    weight: 1.8,
-    dimensions: '30cm x 25cm x 3cm'
+      'Discover the natural world through scientific inquiry and experimentation.',
+    gradeLevel: ['6', '7', '8', '9', '10'],
+    image: 'science.webp'
   },
   {
-    id: 'acc-MLC82',
-    name: 'HyperSynapse ML Accelerator Chip',
-    price: 799.99,
+    id: 'geog-101',
+    name: 'Geography',
     description:
-      'Boost your AI training speeds with the HyperSynapse ML Accelerator Chip. It offers lightning-fast matrix computations and supports multi-GPU integrations.',
-    image: 'acc-MLC82.webp',
-    weight: 0.2,
-    dimensions: '5cm x 5cm x 1cm'
+      "Learn about Earth's landscapes, environments, and the relationship between people and their surroundings.",
+    gradeLevel: ['6', '7', '8', '9', '10'],
+    image: 'geography.webp'
   },
   {
-    id: 'cl-CE7902',
-    name: 'CryoEngine Cooling Module',
-    price: 499.99,
+    id: 'eng-101',
+    name: 'English',
     description:
-      'A state-of-the-art liquid-cooling system designed specifically for AI hardware. Keep your CPUs, GPUs, and motherboards running at peak efficiency during extended training sessions.',
-    image: 'cl-CE7902.webp',
-    weight: 2.0,
-    dimensions: '25cm x 20cm x 10cm'
+      'Develop language skills through reading, writing, speaking, and listening.',
+    gradeLevel: ['6', '7', '8', '9', '10'],
+    image: 'english.webp'
   }
 ]
 
-export const productDetails: ProductDetails[] = [
+export const chapters: Chapter[] = [
   {
-    id: 'qt-24X553',
-    features: [
-      '256 Quantum Cores',
-      'Neural Acceleration Technology',
-      'Energy Efficient Design',
-      'Optimized for AI Workloads'
-    ],
-    warranty: '3 years limited warranty',
-    ratings: 4.8,
-    release_date: '2024-01-15'
+    id: 'hist-ch1',
+    subjectId: 'hist-101',
+    title: 'Ancient Civilizations',
+    description:
+      'Study the rise and fall of early human civilizations and their lasting impact.',
+    order: 1
   },
   {
-    id: 'mb-NE9000',
-    features: [
-      'Integrated Neural Networking',
-      '12 PCIe 5.0 Slots',
-      'Optimized Heat Dissipation',
-      'Supports AI Training Hardware'
-    ],
-    warranty: '3 years limited warranty',
-    ratings: 4.7,
-    release_date: '2024-08-02'
+    id: 'hist-ch2',
+    subjectId: 'hist-101',
+    title: 'Medieval Period',
+    description:
+      'Explore the Middle Ages, feudalism, and the development of nations.',
+    order: 2
   },
   {
-    id: 'acc-MLC82',
-    features: [
-      'Lightning-Fast Matrix Computations',
-      'Multi-GPU Integration Support',
-      'Compact and Efficient Design',
-      'Optimized for Machine Learning'
-    ],
-    warranty: '2 years limited warranty',
-    ratings: 4.6,
-    release_date: '2024-03-05'
+    id: 'sci-ch1',
+    subjectId: 'sci-101',
+    title: 'Matter and Energy',
+    description:
+      'Learn about the fundamental properties of matter and energy transformations.',
+    order: 1
   },
   {
-    id: 'cl-CE7902',
-    features: [
-      'Advanced Liquid Cooling System',
-      'High Efficiency Thermal Management',
-      'Supports CPUs and GPUs',
-      'Quiet and Durable Operation'
-    ],
-    warranty: '3 years limited warranty',
-    ratings: 4.5,
-    release_date: '2024-04-04'
+    id: 'sci-ch2',
+    subjectId: 'sci-101',
+    title: 'Living Organisms',
+    description:
+      'Study the characteristics, structure, and functions of living organisms.',
+    order: 2
   }
 ]
 
-const daysAgo = (days: number) => {
-  const date = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
-  return date.toLocaleDateString()
-}
-
-export const orders: Order[] = [
+export const topics: Topic[] = [
   {
-    id: 'CX2312',
-    items: [
+    id: 'topic-101',
+    chapterId: 'hist-ch1',
+    title: 'Mesopotamian Civilization',
+    summary:
+      'Mesopotamia, often referred to as the "Cradle of Civilization," was located in the fertile region between the Tigris and Euphrates rivers in present-day Iraq. This ancient civilization emerged around 4000 BCE and developed the first cities, writing system (cuneiform), legal codes, and complex social structures.',
+    keyPoints: [
+      "Developed the world's first writing system called cuneiform",
+      'Created the Code of Hammurabi, one of the earliest legal codes',
+      'Built advanced irrigation systems to control flooding',
+      'Established city-states like Ur, Uruk, and Babylon'
+    ],
+    difficulty: 'intermediate'
+  },
+  {
+    id: 'topic-102',
+    chapterId: 'hist-ch1',
+    title: 'Ancient Egypt',
+    summary:
+      'Ancient Egypt was a civilization that thrived along the Nile River from around 3100 BCE to 30 BCE. Famous for its monumental architecture, intricate religious beliefs, and advanced knowledge in mathematics, medicine, and astronomy, Egypt was one of the most powerful and influential civilizations of the ancient world.',
+    keyPoints: [
+      'Developed a complex religious system centered around many gods',
+      'Built pyramids as tombs for pharaohs, believed to be divine rulers',
+      'Created a hieroglyphic writing system',
+      'Pioneered techniques in agriculture, medicine, and mathematics'
+    ],
+    difficulty: 'beginner'
+  },
+  {
+    id: 'topic-201',
+    chapterId: 'sci-ch1',
+    title: 'States of Matter',
+    summary:
+      'Matter can exist in different states: solid, liquid, gas, and plasma. Each state has unique properties regarding shape, volume, and particle arrangement. Changes between these states occur through processes like melting, freezing, evaporation, condensation, and sublimation.',
+    keyPoints: [
+      'Solids have definite shape and volume with tightly packed particles',
+      'Liquids have definite volume but take the shape of their container',
+      'Gases have neither definite shape nor volume and fill their container',
+      'Plasma is an ionized state of matter found in stars and lightning'
+    ],
+    difficulty: 'beginner'
+  }
+]
+
+export const timelines: Timeline[] = [
+  {
+    id: 'timeline-101',
+    topicId: 'topic-101',
+    title: 'Rise and Fall of Mesopotamian Civilizations',
+    events: [
       {
-        product: products[0],
-        quantity: 1
+        id: 'event-101',
+        date: 'c. 4000 BCE',
+        title: 'Rise of Sumerian Civilization',
+        description:
+          "The world's first urban civilization emerged in southern Mesopotamia.",
+        importance: 'high'
       },
       {
-        product: products[2],
-        quantity: 1
+        id: 'event-102',
+        date: 'c. 3500 BCE',
+        title: 'Invention of Cuneiform',
+        description: 'The earliest writing system was developed in Sumer.',
+        importance: 'high'
+      },
+      {
+        id: 'event-103',
+        date: 'c. 2334-2279 BCE',
+        title: 'Akkadian Empire',
+        description: 'Sargon of Akkad established the world first empire.',
+        importance: 'medium'
+      },
+      {
+        id: 'event-104',
+        date: 'c. 1792-1750 BCE',
+        title: 'Hammurabi Rule',
+        description: 'Hammurabi created one of the first written legal codes.',
+        importance: 'high'
+      },
+      {
+        id: 'event-105',
+        date: '539 BCE',
+        title: 'Fall of Babylon',
+        description:
+          'The Neo-Babylonian Empire fell to Cyrus the Great of Persia.',
+        importance: 'medium'
       }
-    ],
-    status: 'delivered',
-    created_at: daysAgo(4),
-    total: 2389.99
+    ]
+  }
+]
+
+export const questions: Question[] = [
+  {
+    id: 'q-101',
+    topicId: 'topic-101',
+    question:
+      'What was the name of the writing system developed in ancient Mesopotamia?',
+    type: 'multiple_choice',
+    options: ['Hieroglyphics', 'Cuneiform', 'Sanskrit', 'Runes'],
+    correctAnswer: 'Cuneiform',
+    explanation:
+      'Cuneiform was developed by the Sumerians around 3500 BCE and is considered the earliest form of writing. The name comes from the Latin word "cuneus" meaning wedge, referring to the wedge-shaped marks made by pressing a reed stylus into clay tablets.',
+    difficulty: 'easy'
   },
   {
-    id: 'CYE223',
-    items: [
-      {
-        product: products[1],
-        quantity: 1
-      }
-    ],
-    status: 'cancelled',
-    created_at: daysAgo(18),
-    total: 1199.99
+    id: 'q-102',
+    topicId: 'topic-101',
+    question:
+      'The Code of Hammurabi is one of the earliest examples of written law.',
+    type: 'true_false',
+    correctAnswer: 'true',
+    explanation:
+      'The Code of Hammurabi, created around 1754 BCE, is one of the oldest deciphered writings of significant length in the world. It consists of 282 laws with punishments, often based on the principle of "an eye for an eye."',
+    difficulty: 'easy'
   },
   {
-    id: 'EB2134',
-    items: [
+    id: 'q-103',
+    topicId: 'topic-201',
+    question: 'Explain the difference between evaporation and boiling.',
+    type: 'short_answer',
+    correctAnswer:
+      'Evaporation occurs at the surface of a liquid at any temperature, while boiling occurs throughout the liquid at a specific temperature (boiling point).',
+    explanation:
+      'Evaporation is a surface phenomenon that can occur at any temperature, with molecules that have enough kinetic energy escaping from the liquid surface. Boiling happens when the vapor pressure equals the atmospheric pressure at a specific temperature, causing bubbles to form throughout the liquid.',
+    difficulty: 'medium'
+  }
+]
+
+export const quizzes: Quiz[] = [
+  {
+    id: 'quiz-101',
+    topicId: 'topic-101',
+    title: 'Mesopotamian Civilization Quiz',
+    difficulty: 'medium',
+    questions: [
       {
-        product: products[3],
-        quantity: 2
+        id: 'q-101',
+        topicId: 'topic-101',
+        question:
+          'What was the name of the writing system developed in ancient Mesopotamia?',
+        type: 'multiple_choice',
+        options: ['Hieroglyphics', 'Cuneiform', 'Sanskrit', 'Runes'],
+        correctAnswer: 'Cuneiform',
+        explanation:
+          'Cuneiform was developed by the Sumerians around 3500 BCE and is considered the earliest form of writing.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'q-102',
+        topicId: 'topic-101',
+        question:
+          'The Code of Hammurabi is one of the earliest examples of written law.',
+        type: 'true_false',
+        correctAnswer: 'true',
+        explanation:
+          'The Code of Hammurabi, created around 1754 BCE, is one of the oldest deciphered writings of significant length in the world.',
+        difficulty: 'easy'
+      },
+      {
+        id: 'q-104',
+        topicId: 'topic-101',
+        question: 'Which river valley was NOT part of Mesopotamia?',
+        type: 'multiple_choice',
+        options: ['Tigris', 'Euphrates', 'Nile', 'Karun'],
+        correctAnswer: 'Nile',
+        explanation:
+          'The Nile River is associated with ancient Egyptian civilization, not Mesopotamia. Mesopotamia was primarily located between the Tigris and Euphrates rivers.',
+        difficulty: 'medium'
       }
-    ],
-    status: 'delivered',
-    created_at: daysAgo(42),
-    total: 999.98
+    ]
+  }
+]
+
+export const concepts: Concept[] = [
+  {
+    id: 'concept-101',
+    name: 'City-State',
+    definition:
+      'A city-state is an independent sovereign state that consists of a city and its surrounding territory. In ancient Mesopotamia, prominent city-states included Ur, Uruk, Babylon, and Nineveh.',
+    topicIds: ['topic-101'],
+    relatedConcepts: ['civilization', 'government', 'urban development']
+  },
+  {
+    id: 'concept-201',
+    name: 'Phase Transition',
+    definition:
+      'A phase transition is the transformation of matter from one state to another due to changes in temperature, pressure, or other physical conditions. Common phase transitions include melting, freezing, vaporization, and condensation.',
+    topicIds: ['topic-201'],
+    relatedConcepts: ['states of matter', 'thermal energy', 'molecular motion']
   }
 ]

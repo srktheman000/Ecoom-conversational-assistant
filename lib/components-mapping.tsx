@@ -1,19 +1,21 @@
 'use client'
-import { componentsMap } from '@/config/ui/components'
 import React from 'react'
+import { componentsMap } from '@/config/ui/components'
 
-
-type Component = {
+// Use a flexible type that allows any properties
+type ComponentProps = {
   name: string
+  children: React.ReactNode
   [key: string]: any
 }
 
-export const getComponent = (component: Component) => {
-  if (!component) return null
+export const getComponent = (component: ComponentProps) => {
+  if (!component || !component.name) return null
 
-  const ComponentToRender =
-    componentsMap[component.name as keyof typeof componentsMap]
+  // Get the appropriate component from the map
+  const ComponentToRender = componentsMap[component.name]
   if (!ComponentToRender) return null
 
+  // Pass all props except possibly transforming some for type compatibility
   return <ComponentToRender {...component} />
 }

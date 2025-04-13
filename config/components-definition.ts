@@ -1,6 +1,5 @@
 // List of components that will be used by the generate_ui tool
 // Define recursive components using the $ref property
-// More information on supported schemas: https://platform.openai.com/docs/guides/structured-outputs#supported-schemas
 
 export const components = [
   {
@@ -22,97 +21,112 @@ export const components = [
     }
   },
   {
-    name: 'carousel',
+    name: 'summary_card',
     parameters: {
-      children: {
+      title: {
+        type: 'string',
+        description: 'Title of the summary'
+      },
+      content: {
+        type: 'string',
+        description: 'Summary content text'
+      },
+      subject: {
+        type: 'string',
+        description: 'Subject the summary belongs to'
+      },
+      chapter: {
+        type: 'string',
+        description: 'Chapter the summary belongs to'
+      },
+      keypoints: {
         type: 'array',
         items: {
-          anyOf: [{ $ref: '#/$defs/item' }, { $ref: '#/$defs/order' }]
-        }
+          type: 'string'
+        },
+        description: 'Key points to remember from the summary'
       }
     }
   },
   {
-    name: 'item',
+    name: 'quiz',
     parameters: {
-      id: {
-        type: 'string'
-      },
-      item_name: {
-        type: 'string'
-      },
-      primary_image: {
-        type: 'string'
-      },
-      description: {
-        type: 'string'
-      },
-      price: {
-        type: 'number'
-      }
-    }
-  },
-  {
-    name: 'order',
-    parameters: {
-      id: {
+      title: {
         type: 'string',
-        description: 'ID of the order.'
+        description: 'Title of the quiz'
       },
-      total: {
-        type: 'number',
-        description: 'Total price of the order.'
-      },
-      status: {
+      difficulty: {
         type: 'string',
-        description: 'Status of the order.'
+        description: 'Difficulty level of the quiz'
       },
-      date: {
-        type: 'string',
-        description: 'Date of the order in format YYYY-MM-DD.'
-      },
-      products: {
+      questions: {
         type: 'array',
         items: {
           type: 'object',
           properties: {
-            item: {
-              $ref: '#/$defs/item'
+            id: {
+              type: 'string',
+              description: 'Question ID'
             },
-            quantity: {
-              type: 'integer',
-              description: 'Quantity of the product.'
+            question: {
+              type: 'string',
+              description: 'The question text'
+            },
+            options: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'Multiple choice options (if applicable)'
+            },
+            type: {
+              type: 'string',
+              enum: ['multiple_choice', 'true_false', 'short_answer'],
+              description: 'Type of question'
             }
           },
-          required: ['item', 'quantity'],
+          required: ['id', 'question', 'type', 'options'],
           additionalProperties: false
         }
       }
     }
   },
   {
-    name: 'bar_chart',
+    name: 'concept_map',
     parameters: {
-      columns: {
+      title: {
+        type: 'string',
+        description: 'Title of the concept map'
+      },
+      centralConcept: {
+        type: 'string',
+        description: 'The main concept being mapped'
+      },
+      connections: {
         type: 'array',
         items: {
           type: 'object',
           properties: {
-            label: {
+            from: {
               type: 'string',
-              description: 'Label for the column.'
+              description: 'Source concept'
             },
-            value: {
+            to: {
               type: 'string',
-              description: 'Value for the column.'
+              description: 'Target concept'
+            },
+            relationship: {
+              type: 'string',
+              description: 'Description of the relationship between concepts'
             }
           },
-          required: ['label', 'value'],
+          required: ['from', 'to', 'relationship'],
           additionalProperties: false
         }
       }
     }
   },
+  // In config/components-definition.js
   {
     name: 'table',
     parameters: {
@@ -123,11 +137,11 @@ export const components = [
           properties: {
             key: {
               type: 'string',
-              description: 'Key for the column.'
+              description: 'Key for the column'
             },
             title: {
               type: 'string',
-              description: 'Title for the column.'
+              description: 'Title for the column'
             }
           },
           required: ['key', 'title'],
@@ -137,20 +151,86 @@ export const components = [
       rows: {
         type: 'array',
         items: {
-          $ref: '#/$defs/row'
+          type: 'object',
+          properties: {
+            col1: { type: 'string', description: 'Value for column 1' },
+            col2: { type: 'string', description: 'Value for column 2' },
+            col3: { type: 'string', description: 'Value for column 3' }
+          },
+          additionalProperties: false,
+          required: ['col1', 'col2', 'col3']
         }
       }
     }
   },
   {
-    name: 'row',
+    name: 'flashcard',
     parameters: {
-      values: {
+      front: {
+        type: 'string',
+        description: 'Content for the front of the flashcard'
+      },
+      back: {
+        type: 'string',
+        description: 'Content for the back of the flashcard'
+      },
+      subject: {
+        type: 'string',
+        description: 'Subject the flashcard belongs to'
+      },
+      topic: {
+        type: 'string',
+        description: 'Topic the flashcard belongs to'
+      }
+    }
+  },
+  {
+    name: 'flashcard_set',
+    parameters: {
+      title: {
+        type: 'string',
+        description: 'Title of the flashcard set'
+      },
+      cards: {
         type: 'array',
-        description:
-          'An array of values for the row, either strings or integers.',
         items: {
-          anyOf: [{ type: 'string' }, { type: 'integer' }]
+          $ref: '#/$defs/flashcard'
+        }
+      }
+    }
+  },
+  {
+    name: 'timeline',
+    parameters: {
+      title: {
+        type: 'string',
+        description: 'Title of the timeline'
+      },
+      events: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            date: {
+              type: 'string',
+              description: 'Date or year of the event'
+            },
+            title: {
+              type: 'string',
+              description: 'Title of the event'
+            },
+            description: {
+              type: 'string',
+              description: 'Description of the event'
+            },
+            importance: {
+              type: 'string',
+              enum: ['low', 'medium', 'high'],
+              description: 'Importance level of the event'
+            }
+          },
+          required: ['date', 'title', 'description', 'importance'],
+          additionalProperties: false
         }
       }
     }

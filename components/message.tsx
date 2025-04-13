@@ -33,7 +33,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           <div className="flex">
             <div className="mr-4 rounded-[18px] px-4 py-2 md:mr-24 text-white bg-black font-light">
               <div>
-                <ReactMarkdown>{message.content as string}</ReactMarkdown>
+                <ReactMarkdown>{message.content?.toString()}</ReactMarkdown>
               </div>
             </div>
           </div>
